@@ -20,11 +20,12 @@ import {
 } from 'react-navigation';
 
 import {Entry} from './entry'
-
-import {Camera} from './entry'
+import {Example} from './Example'
+import {QrCamera} from './camera'
 const electronnative = StackNavigator({
   Home: { screen: Entry },
-  Camera: {screen: Camera}
+  QrCamera: {screen: QrCamera},
+  Example: {screen: Example}
 });
 
 

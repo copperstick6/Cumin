@@ -13,6 +13,10 @@ import {
   StackNavigator,
 } from 'react-navigation';
 
+import Example from './Example'
+import QRCodeScanner from 'react-native-qrcode-scanner';
+
+
 
 export class Entry extends Component {
   static navigationOptions = {
@@ -31,40 +35,24 @@ export class Entry extends Component {
   }
   render() {
     const nextRoute = {
-      component: Camera,
+      component: Example,
       title: 'Camera'
     };
     const { navigate } = this.props.navigation;
     return (
       <View style = {styles.container}>
       <Text style={styles.welcome}>
-      Hi
+      Hi, Welcome to Electron
       </Text>
-      <Button onPress={() => navigate('Camera')} title="Camera">Navigate</Button>
+      <Text style = {styles.instructions}>
+      To Get Started with the camera, press the button below.
+      </Text>
+      <Button onPress={() => navigate("Example")} title="Camera">Navigate</Button>
       </View>
     )
   }
 }
 
-export class Camera extends Component{
-
-  render(){
-    return(
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    )
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
