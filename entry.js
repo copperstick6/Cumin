@@ -40,7 +40,9 @@ export class Entry extends Component {
       <Text style = {styles.instructions}>
       To Get Started with the camera, press the button below.
       </Text>
+      <View>
       <Button onPress={() => navigate("QrCamera")} title="Camera">Navigate</Button>
+      </View>
       </View>
     )
   }

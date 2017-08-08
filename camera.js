@@ -15,6 +15,9 @@ import Camera from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 export class QrCamera extends Component {
+  static navigationOptions = {
+    title: 'Camera',
+  };
   constructor(props){
     super(props)
     this.state = {
@@ -22,11 +25,12 @@ export class QrCamera extends Component {
     }
     this.resetState = this.resetState.bind(this)
   }
-  componentDidMount(){
+  componentWillMount(){
     console.log(this.state.detected)
     this.setState({detected: false})
   }
   resetState(){
+    console.log("entered")
     this.setState({detected: false})
   }
     render() {
@@ -39,12 +43,12 @@ export class QrCamera extends Component {
             style={styles.preview}
             aspect={Camera.constants.Aspect.fill}
             onBarCodeRead = {this.barcode.bind(this)} onPress={this.takePicture.bind(this)}>
-            <Text style={styles.capture}>[CAPTURE]</Text>
           </Camera>
         </View>
       );
     }
     barcode(event){
+      console.log(this.state.detected)
       console.log(event.data)
       if(!this.state.detected){
         const { navigate } = this.props.navigation;
