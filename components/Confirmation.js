@@ -71,7 +71,7 @@ export class Confirmation extends React.Component {
       <Text style={styles.welcome}>This attendee's email is: </Text>
       <Text style={styles.instructions}>{this.props.navigation.state.params.email}</Text>
       <View>
-      <Button onPress={this.reset} title="Camera">Navigate Back to Home</Button>
+      <Button onPress={this.reset} title="Navigate Back to Home"></Button>
       </View>
       </View>
     )

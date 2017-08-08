@@ -9,9 +9,6 @@ import {
   Linking,
   Button
 } from 'react-native';
-import {
-  StackNavigator,
-} from 'react-navigation';
 
 
 export class Entry extends Component {
@@ -43,6 +40,13 @@ export class Entry extends Component {
       <View>
       <Button onPress={() => navigate("QrCamera")} title="Camera">Navigate</Button>
       </View>
+      <Text style = {styles.welcome}>
+      Or
+      </Text>
+      <Text style={styles.instructions}>
+      To manually input emails, press the button below.
+      </Text>
+      <Button onPress={() => navigate("Manual")} title="Manual Input"></Button>
       </View>
     )
   }

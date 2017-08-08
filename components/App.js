@@ -18,14 +18,15 @@ import {
 import {
   StackNavigator,
 } from 'react-navigation';
-
+import {ManualInput} from './manInput'
 import {Entry} from './entry'
 import {Confirmation} from './Confirmation'
 import {QrCamera} from './camera'
 const electronnative = StackNavigator({
   Home: { screen: Entry },
   QrCamera: {screen: QrCamera},
-  Confirmation: {screen: Confirmation}
+  Confirmation: {screen: Confirmation},
+  Manual: {screen: ManualInput}
 });
 
 
