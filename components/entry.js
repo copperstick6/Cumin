@@ -11,44 +11,56 @@ import {
   AsyncStorage,
   Image
 } from 'react-native';
+import {Volunteer} from './volunteer'
 
 import {Default} from './Default'
 
 
 export class Entry extends Component {
-  static navigationOptions = {
+  static navigationOptions =({navigation}) => ({
     title: 'Welcome',
-  };
-  constructor(){
-    super()
+    headerRight: <Button title="Settings" onPress ={() => navigation.navigate('Settings')}/>
+  });
+  constructor(props){
+    super(props)
     this.state = {
-      isNew: true
+      isNew: false,
     }
-    this.navigate = this.navigate.bind(this)
+    this.setNew = this.setNew.bind(this)
   }
-  componentDidMount(){
+  componentWillMount(){
+    //Functionality for the "Getting Started" Page and allowing users to set their API endpoints
     AsyncStorage.getItem("isNew").then(function(value){
       if(value === null){
-        console.log("isNull")
+        this.setState({isNew: true})
+        AsyncStorage.setItem("isNew": true)
       }
       else{
         this.setState({isNew: false})
       }
-    })
+    }.bind(this))
   }
-  navigate(input){
-    console.log("Entered")
-    this.props.navigation(input)
+  setNew(){
+    this.setState({isNew: !this.state.isNew})
   }
 
+
+
   render() {
-    const screen = <Default navigation = {this.props.navigation}/>
+    let screen = null
+    if(this.state.isNew){
+      screen = <Volunteer setNew = {this.setNew} />
+    }
+    else{
+      screen = <Default navigation = {this.props.navigation}/>
+    }
+    const { navigate } = this.props.navigation;
     return (
       <View style = {styles.container}>
       <Image source={require('../electron.png')} style = {styles.image} />
-
       {screen}
       </View>
+
     )
   }
 }
@@ -61,15 +73,17 @@ const styles = StyleSheet.create({
     resizeMode: "contain"
   },
   container: {
-    flex: 2,
-    justifyContent: 'center',
+    flex: 3,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
+  button: {
+    marginRight: 10,
+  },
   welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginBottom: 5,
+    fontSize: 25,
+    margin: 10,
   },
   instructions: {
     textAlign: 'center',

@@ -37,6 +37,7 @@ export class Confirmation extends React.Component {
     super(props)
     this.reset = this.reset.bind(this)
     this.backPress = this.backPress.bind(this)
+    this.rescan = this.rescan.bind(this)
   }
   componentDidMount(){
     if(!(Platform.OS === 'ios')){
@@ -52,6 +53,10 @@ export class Confirmation extends React.Component {
 
   backPress() {
     this.props.navigation.state.params.resetState()
+  }
+  rescan(){
+    this.props.navigation.state.params.resetState()
+    this.props.navigation.dispatch(NavigationActions.back())
   }
   reset(){
     return this.props.navigation.dispatch(NavigationActions.reset(
@@ -73,8 +78,11 @@ export class Confirmation extends React.Component {
       <View style={styles.container}>
       <Text style={styles.welcome}>This attendee's email is: </Text>
       <Text style={styles.instructions}>{this.props.navigation.state.params.email}</Text>
+      <Text>{"\n"}</Text>
       <View>
-      <Button onPress={this.reset} title="Navigate Back to Home"></Button>
+      <Button onPress={this.reset} title="Send Email"></Button>
+      <Text>{"\n"}{"\n"}{"\n"}</Text>
+      <Button onPress={this.rescan} title="Rescan QR Code"></Button>
       </View>
       </View>
     )

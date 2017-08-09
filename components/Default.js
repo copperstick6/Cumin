@@ -28,14 +28,13 @@ export class Default extends Component {
   }
   navigateManual(){
     const {navigate} = this.props.navigation
-    navigate("QrCamera")
+    navigate("Manual")
   }
 
 
   render() {
     return (
       <View style = {styles.container}>
-      <Image source={require('../electron.png')} style = {styles.image} />
       <Text style={styles.welcome}>
       Hi, Welcome to Electron
       </Text>
@@ -44,7 +43,6 @@ export class Default extends Component {
       </Text>
       <Button onPress={this.navigateQR} title="Camera">Navigate</Button>
       <Text style = {styles.welcome}>
-      {"\n"}
       Or
       </Text>
       <Text style={styles.instructions}>
@@ -59,7 +57,7 @@ export class Default extends Component {
 
 const styles = StyleSheet.create({
   image: {
-    height: '20%',
+    height: '40%',
     width: '75%',
     resizeMode: "contain"
   },
@@ -69,9 +67,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
+  button: {
+    marginRight: 10,
+  },
   welcome: {
     fontSize: 25,
-    marginBottom: 10,
+    margin: 10,
   },
   instructions: {
     textAlign: 'center',

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
-  View
+  View,
+  Vibration
 } from 'react-native';
 import {
   StackNavigator,
@@ -42,7 +43,7 @@ export class QrCamera extends Component {
             }}
             style={styles.preview}
             aspect={Camera.constants.Aspect.fill}
-            onBarCodeRead = {this.barcode.bind(this)} onPress={this.takePicture.bind(this)}>
+            onBarCodeRead = {this.barcode.bind(this)}>
           </Camera>
         </View>
       );
@@ -51,6 +52,7 @@ export class QrCamera extends Component {
       console.log(this.state.detected)
       console.log(event.data)
       if(!this.state.detected){
+        Vibration.vibrate()
         const { navigate } = this.props.navigation;
         navigate("Confirmation", {email: event.data, resetState: this.resetState})
         this.setState({detected: true})
@@ -58,14 +60,6 @@ export class QrCamera extends Component {
 
     }
 
-    takePicture() {
-      console.warn("entered")
-      const options = {};
-      //options.location = ...
-      this.camera.capture({metadata: options})
-        .then((data) => console.log(data))
-        .catch(err => console.error(err));
-    }
   }
 
   const styles = StyleSheet.create({

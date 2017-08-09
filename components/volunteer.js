@@ -1,30 +1,34 @@
 import React, { Component } from 'react';
-import { TextInput, StyleSheet, View, Text, Button } from 'react-native';
-
-export class ManualInput extends Component {
+import { TextInput, StyleSheet, View, Text, Button, AsyncStorage } from 'react-native';
+import Toast from 'react-native-simple-toast'
+export class Volunteer extends Component {
   static navigationOptions = {
     title: 'Manual Input',
   };
   constructor(props) {
     super(props);
     this.state = { text: '' };
-    this.confirmationScreen = this.confirmationScreen.bind(this)
-    this.resetState = this.resetState.bind(this)
+    this.goHome = this.goHome.bind(this)
   }
-  resetState(){
-    this.setState({text: ''})
+  componentWillMount(){
+    AsyncStorage.getItem("volunteer").then(function(value){
+      if(!(value === null)){
+        this.setState({text: value})
+      }
+    }.bind(this))
   }
-  confirmationScreen(){
-    const { navigate } = this.props.navigation;
-    navigate("Confirmation", {email: this.state.text, resetState: this.resetState})
-    console.log("pressed")
+
+  goHome(){
+    AsyncStorage.setItem("volunteer", this.state.text)
+    Toast.show("Address successfully added.")
+    this.props.setNew()
   }
 
   render() {
     return (
       <View style={styles.container}>
       <Text style = {styles.welcome}>
-      Please enter the email address below.
+      Please enter your volunteer email address below.
       </Text>
       <TextInput
         style={{height: 40, width:300}}
@@ -33,7 +37,7 @@ export class ManualInput extends Component {
       />
       <Text style = {styles.welcome}>
       </Text>
-      <Button onPress={this.confirmationScreen} title="Next"></Button>
+      <Button onPress={this.goHome} title="Next"></Button>
       </View>
 
     );
@@ -44,7 +48,7 @@ export class ManualInput extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },

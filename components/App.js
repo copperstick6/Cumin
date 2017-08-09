@@ -22,11 +22,13 @@ import {ManualInput} from './manInput'
 import {Entry} from './entry'
 import {Confirmation} from './Confirmation'
 import {QrCamera} from './camera'
+import {Settings} from './Settings'
 const electronnative = StackNavigator({
   Home: { screen: Entry },
   QrCamera: {screen: QrCamera},
   Confirmation: {screen: Confirmation},
-  Manual: {screen: ManualInput}
+  Manual: {screen: ManualInput},
+  Settings: {screen: Settings, mode:'modal'}
 });
 
 
