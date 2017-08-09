@@ -44,7 +44,10 @@ export class Confirmation extends React.Component {
     }
   }
   componentWillUnmount() {
-      BackHandler.removeEventListener('hardwareBackPress', this.backPress);
+    if(!(Platform.OS === 'ios')){
+        BackHandler.removeEventListener('hardwareBackPress', this.backPress);
+    }
+
 }
 
   backPress() {

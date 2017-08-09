@@ -7,8 +7,12 @@ import {
   Platform,
   TouchableOpacity,
   Linking,
-  Button
+  Button,
+  AsyncStorage,
+  Image
 } from 'react-native';
+
+import {Default} from './Default'
 
 
 export class Entry extends Component {
@@ -18,35 +22,32 @@ export class Entry extends Component {
   constructor(){
     super()
     this.state = {
-      platform : "android"
+      isNew: true
     }
+    this.navigate = this.navigate.bind(this)
   }
   componentDidMount(){
-    if(Platform.OS === 'ios'){
-      this.setState({platform: "ios"})
-    }
+    AsyncStorage.getItem("isNew").then(function(value){
+      if(value === null){
+        console.log("isNull")
+      }
+      else{
+        this.setState({isNew: false})
+      }
+    })
   }
-  render() {
+  navigate(input){
+    console.log("Entered")
+    this.props.navigation(input)
+  }
 
-    const { navigate } = this.props.navigation;
+  render() {
+    const screen = <Default navigation = {this.props.navigation}/>
     return (
       <View style = {styles.container}>
-      <Text style={styles.welcome}>
-      Hi, Welcome to Electron
-      </Text>
-      <Text style = {styles.instructions}>
-      To Get Started with the camera, press the button below.
-      </Text>
-      <View>
-      <Button onPress={() => navigate("QrCamera")} title="Camera">Navigate</Button>
-      </View>
-      <Text style = {styles.welcome}>
-      Or
-      </Text>
-      <Text style={styles.instructions}>
-      To manually input emails, press the button below.
-      </Text>
-      <Button onPress={() => navigate("Manual")} title="Manual Input"></Button>
+      <Image source={require('../electron.png')} style = {styles.image} />
+
+      {screen}
       </View>
     )
   }
@@ -54,8 +55,13 @@ export class Entry extends Component {
 
 
 const styles = StyleSheet.create({
+  image: {
+    height: '40%',
+    width: '75%',
+    resizeMode: "contain"
+  },
   container: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
@@ -63,7 +69,7 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 5,
   },
   instructions: {
     textAlign: 'center',
