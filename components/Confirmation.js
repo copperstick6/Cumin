@@ -59,6 +59,19 @@ export class Confirmation extends React.Component {
     this.props.navigation.dispatch(NavigationActions.back())
   }
   reset(){
+    /*
+    fetch('https://my.hacktx.com/api/check-in', {
+  method: 'POST',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    firstParam: 'yourValue',
+    secondParam: 'yourOtherValue',
+  })
+})
+*/
     return this.props.navigation.dispatch(NavigationActions.reset(
                  {
                     index: 0,
