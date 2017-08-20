@@ -7,62 +7,83 @@ import {
   Platform,
   TouchableOpacity,
   Linking,
-  Button
+  Button,
+  AsyncStorage,
+  Image
 } from 'react-native';
+import {Volunteer} from './volunteer'
+
+import {Default} from './Default'
 
 
 export class Entry extends Component {
-  static navigationOptions = {
+  static navigationOptions =({navigation}) => ({
     title: 'Welcome',
-  };
-  constructor(){
-    super()
+    headerRight: <Button title="Settings" onPress ={() => navigation.navigate('Settings')}/>
+  });
+  constructor(props){
+    super(props)
     this.state = {
-      platform : "android"
+      isNew: false,
     }
+    this.setNew = this.setNew.bind(this)
   }
-  componentDidMount(){
-    if(Platform.OS === 'ios'){
-      this.setState({platform: "ios"})
-    }
+  componentWillMount(){
+    //Functionality for the "Getting Started" Page and allowing users to set their API endpoints
+    AsyncStorage.getItem("volunteer").then(function(value){
+      console.log(value)
+      if(value === null){
+        this.setState({isNew: true})
+        AsyncStorage.setItem("isNew": true)
+      }
+      else{
+        this.setState({isNew: false})
+      }
+    }.bind(this))
   }
-  render() {
+  setNew(){
+    this.setState({isNew: false})
+  }
 
+
+
+  render() {
+    let screen = null
+    if(this.state.isNew){
+      screen = <Volunteer setNew = {this.setNew} />
+    }
+    else{
+      screen = <Default navigation = {this.props.navigation}/>
+    }
     const { navigate } = this.props.navigation;
     return (
       <View style = {styles.container}>
-      <Text style={styles.welcome}>
-      Hi, Welcome to Electron
-      </Text>
-      <Text style = {styles.instructions}>
-      To Get Started with the camera, press the button below.
-      </Text>
-      <View>
-      <Button onPress={() => navigate("QrCamera")} title="Camera">Navigate</Button>
+      <Image source={require('../electron.png')} style = {styles.image} />
+      {screen}
       </View>
-      <Text style = {styles.welcome}>
-      Or
-      </Text>
-      <Text style={styles.instructions}>
-      To manually input emails, press the button below.
-      </Text>
-      <Button onPress={() => navigate("Manual")} title="Manual Input"></Button>
-      </View>
+
     )
   }
 }
 
 
 const styles = StyleSheet.create({
+  image: {
+    height: '40%',
+    width: '75%',
+    resizeMode: "contain"
+  },
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    flex: 3,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
+  button: {
+    marginRight: 10,
+  },
   welcome: {
-    fontSize: 20,
-    textAlign: 'center',
+    fontSize: 25,
     margin: 10,
   },
   instructions: {
