@@ -30,16 +30,7 @@ export class Entry extends Component {
   }
   componentWillMount(){
     //Functionality for the "Getting Started" Page and allowing users to set their API endpoints
-    AsyncStorage.getItem("volunteer").then(function(value){
-      console.log(value)
-      if(value === null){
-        this.setState({isNew: true})
-        AsyncStorage.setItem("isNew": true)
-      }
-      else{
-        this.setState({isNew: false})
-      }
-    }.bind(this))
+
   }
   setNew(){
     this.setState({isNew: false})

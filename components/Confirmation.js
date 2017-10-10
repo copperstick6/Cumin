@@ -22,7 +22,8 @@ export class Confirmation extends React.Component {
     this.state = {
       error: false,
       errorMsg : '',
-      visible: true
+      visible: true,
+      userDetails: null
     }
     this.backPress = this.backPress.bind(this)
     this.rescan = this.rescan.bind(this)
@@ -30,7 +31,6 @@ export class Confirmation extends React.Component {
   static navigationOptions = {
     title: 'Confirmation',
     headerLeft: null,
-    userDetails: null
   };
   componentDidMount(){
     if(!(Platform.OS === 'ios')){
@@ -58,7 +58,7 @@ export class Confirmation extends React.Component {
             confirned: responseJson.confirmed,
             birthday: responseJson.birthday
           }
-          this.setState({visible: false})
+          this.setState({visible: false, userDetails: userData})
         })
         .catch((error) => {
           console.log(error)
