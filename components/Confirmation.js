@@ -23,7 +23,8 @@ export class Confirmation extends React.Component {
       error: false,
       errorMsg : '',
       visible: true,
-      userDetails: null
+      userDetails: null,
+	  curMsg : null
     }
     this.backPress = this.backPress.bind(this)
     this.rescan = this.rescan.bind(this)
@@ -44,21 +45,17 @@ export class Confirmation extends React.Component {
   }
   componentWillMount(){
     AsyncStorage.getItem("volunteer").then(function(value){
-      if(!(value === null)){
+      if(!(value === null) && this.props.navigation.state.params.email != ''){
         fetch('https://my.hacktx.com/api/check-in?email=' + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(value))
         .then(response => response.json())
         .then(responseJson => {
-          console.log(responseJson)
-          var userData = {
-            name: responseJson.name,
-            school: responseJson.school,
-            email: responseJson.email,
-            age: responseJson.age,
-            checked_in: responseJson.checked_in,
-            confirned: responseJson.confirmed,
-            birthday: responseJson.birthday
-          }
-          this.setState({visible: false, userDetails: userData})
+			if(responseJson['message'] == "User does not exist"){
+				this.setState({curMsg: String(responseJson['message'])})
+			}
+			else{
+				this.setState({curMsg: String(responseJson['age'])})
+			}
+          this.setState({visible: false})
         })
         .catch((error) => {
           console.log(error)
@@ -66,7 +63,7 @@ export class Confirmation extends React.Component {
         });
       }
       else{
-        this.setState({error: true, errorMsg: "Invalid Email", visible: false})
+        this.setState({error: true, curMsg: "Invalid Email", visible: false})
       }
     }.bind(this))
   }
@@ -82,7 +79,7 @@ export class Confirmation extends React.Component {
   render(){
     var msg = null;
     if(!(this.state.visible)){
-      msg = <Text>HI</Text>
+      msg = <Button onPress={this.rescan} title="Next"></Button>
     }
     return(
       <View style={styles.container}>
