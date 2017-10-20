@@ -14,7 +14,7 @@ import {
   NavigationActions,
 } from 'react-navigation';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import Toast from 'react-native-simple-toast'
 import API from '../config/api.json'
 
 export class Confirmation extends React.Component {
@@ -60,7 +60,7 @@ export class Confirmation extends React.Component {
            else if(responseJson['confirmed'] == false){
               this.setState({curMsg: String(responseJson['name']) + " is not confirmed! Tell attendee to go to desk."})
            }
-           else if(responseJson['checked_in'] == false){
+           else if(responseJson['checked_in'] == true){
               this.setState({curMsg: String(responseJson['name']) + " is checked in already."})
            }
            else{
@@ -130,6 +130,12 @@ export class Confirmation extends React.Component {
         .then(response => response.json())
         .then(responseJson => {
           console.log(String(JSON.stringify(responseJson)))
+          if(responseJson['confirmed'] == true){
+            Toast.show("User successfully checked in")
+          }
+          else{
+            Toast.show("User check in failed.")
+          }
          this.setState({visible: false})
          this.props.navigation.state.params.resetState()
          this.props.navigation.dispatch(NavigationActions.back())
