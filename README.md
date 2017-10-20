@@ -1,6 +1,6 @@
-# Electron-Native
+# Cumin
 
-![Electron](electron.png)
+![Cumin](cumin.png)
 
 
 Hackathon check-in system backed by [Pepper](https://github.com/rohitdatta/pepper).
@@ -8,6 +8,3 @@ Hackathon check-in system backed by [Pepper](https://github.com/rohitdatta/peppe
 
 ## Demo
 ![alt text](https://j.gifs.com/ElJ4QK.gif)
-  
-## Setup
-Clone this repository into a directory of your choice and run npm install
