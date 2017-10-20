@@ -36,7 +36,7 @@ export class Default extends Component {
     return (
       <View style = {styles.container}>
       <Text style={styles.welcome}>
-      Hi, Welcome to Electron
+      Hi, Welcome to Cumin
       </Text>
       <Text style = {styles.instructions}>
       To Get Started with the camera, press the button below.

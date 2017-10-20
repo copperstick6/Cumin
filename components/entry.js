@@ -49,7 +49,7 @@ export class Entry extends Component {
     const { navigate } = this.props.navigation;
     return (
       <View style = {styles.container}>
-      <Image source={require('../electron.png')} style = {styles.image} />
+      <Image source={require('../cumin.png')} style = {styles.image} />
       {screen}
       </View>
 
@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
   image: {
     height: '40%',
     width: '75%',
-    resizeMode: "contain"
+    resizeMode: "contain",
+    backgroundColor: '#F5FCFF',
   },
   container: {
     flex: 3,
