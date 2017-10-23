@@ -49,24 +49,30 @@ export class Confirmation extends React.Component {
     AsyncStorage.getItem("volunteer").then(function(value){
       if(!(value === null) && this.props.navigation.state.params.email != ''){
         if(!(String(API.API.Secret) == "" || String(API.API.Pepper) == null)){
-          console.log(String(API.API.Pepper) + "?email=" + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(value) + "&secret=" + String(API.API.Secret))
           fetch(String(API.API.Pepper) + "?email=" + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(value) + "&secret=" + String(API.API.Secret))
           .then(response => response.json())
           .then(responseJson => {
-            console.log(responseJson)
-  			  if(responseJson['message'] == "User does not exist"){
-  				    this.setState({curMsg: String(responseJson['message'])})
-  			   }
-           else if(responseJson['confirmed'] == false){
-              this.setState({curMsg: String(responseJson['name']) + " is not confirmed! Tell attendee to go to desk."})
+			  console.log(responseJson)
+  			if(responseJson['message'] == "User does not exist"){
+  			    this.setState({curMsg: String(responseJson['message'])})
+  	  		}
+			else if(responseJson['checked_in'] == true){
+               this.setState({curMsg: String(responseJson['name']) + " is checked in already."})
+            }
+           else if(responseJson['status'] == "CONFIRMED"){
+			   this.setState({valid: true})
+			   this.setState({curMsg: "Attendee is Confirmed. Check them In!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
            }
-           else if(responseJson['checked_in'] == true){
-              this.setState({curMsg: String(responseJson['name']) + " is checked in already."})
+		   else if(responseJson['status'] == "SIGNING"){
+			   this.setState({valid: true})
+			   this.setState({curMsg: "Attendee is Confirmed, but has not signed forms. Check them In after they sign their forms!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
+           }
+           else if(responseJson['status'] == "REJECTED"){
+              this.setState({curMsg: String(responseJson['name']) + " rejected. Here is their data:\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] +"\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school']) })
            }
            else{
-             this.setState({valid: true})
-             this.setState({curMsg: "Attendee is Confirmed. Check them In!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
-           }
+			   this.setState({curMsg: String(responseJson['name']) + " is waitlisted. Here is their data:\nAttendee Details: \nName: " + String(responseJson['name']) + "\nStatus: " + responseJson['status'] + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school']) })
+             }
            this.setState({visible: false})
           })
           .catch((error) => {
@@ -118,6 +124,7 @@ export class Confirmation extends React.Component {
   }
   rescan(){
     if(this.state.valid){
+		this.setState({visible : true})
       AsyncStorage.getItem("volunteer").then(function(value){
         console.log(String(API.API.Pepper))
         fetch(String(API.API.Pepper), {
@@ -130,7 +137,7 @@ export class Confirmation extends React.Component {
         .then(response => response.json())
         .then(responseJson => {
           console.log(String(JSON.stringify(responseJson)))
-          if(responseJson['confirmed'] == true){
+          if(responseJson['checked_in'] == true){
             Toast.show("User successfully checked in")
           }
           else{
