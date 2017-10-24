@@ -1,4 +1,4 @@
-package com.electronnative;
+package com.cumin;
 
 import android.app.Application;
 

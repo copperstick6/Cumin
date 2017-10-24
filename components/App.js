@@ -23,7 +23,7 @@ import {Entry} from './entry'
 import {Confirmation} from './Confirmation'
 import {QrCamera} from './camera'
 import {Settings} from './Settings'
-const electronnative = StackNavigator({
+const cumin = StackNavigator({
   Home: { screen: Entry },
   QrCamera: {screen: QrCamera},
   Confirmation: {screen: Confirmation},
@@ -33,4 +33,4 @@ const electronnative = StackNavigator({
 
 
 
-AppRegistry.registerComponent('electronnative', () => electronnative);
+AppRegistry.registerComponent('cumin', () => cumin);
