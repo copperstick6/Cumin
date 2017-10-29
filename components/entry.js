@@ -14,7 +14,7 @@ import {
 import {Volunteer} from './volunteer'
 
 import {Default} from './Default'
-
+import API from '../config/api.json'
 
 export class Entry extends Component {
   static navigationOptions =({navigation}) => ({

@@ -8,7 +8,8 @@ import {
   Platform,
   BackAndroid,
   BackHandler,
-  AsyncStorage
+  AsyncStorage,
+  TextInput
 } from 'react-native';
 import {
   NavigationActions,
@@ -25,11 +26,14 @@ export class Confirmation extends React.Component {
       errorMsg : '',
       visible: true,
       userDetails: null,
-	    curMsg : null,
+	  curMsg : null,
+	  eid: false,
+	  userEid: null,
       valid: false
     }
     this.backPress = this.backPress.bind(this)
     this.rescan = this.rescan.bind(this)
+	this.sendCode = this.sendCode.bind(this)
   }
   static navigationOptions = {
     title: 'Confirmation',
@@ -46,10 +50,10 @@ export class Confirmation extends React.Component {
     }
   }
   componentWillMount(){
-    AsyncStorage.getItem("volunteer").then(function(value){
-      if(!(value === null) && this.props.navigation.state.params.email != ''){
+      if(!(String(API.API.Volunteer) === null) && this.props.navigation.state.params.email != ''){
         if(!(String(API.API.Secret) == "" || String(API.API.Pepper) == null)){
-          fetch(String(API.API.Pepper) + "?email=" + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(value) + "&secret=" + String(API.API.Secret))
+			console.log(String(API.API.Pepper) + "?email=" + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(API.API.Volunteer) + "&secret=" + String(API.API.Secret))
+          fetch(String(API.API.Pepper) + "?email=" + String(this.props.navigation.state.params.email)  + "&secret=" + String(API.API.Secret) + '&volunteer_email=' + String(API.API.Volunteer))
           .then(response => response.json())
           .then(responseJson => {
 			  console.log(responseJson)
@@ -60,11 +64,18 @@ export class Confirmation extends React.Component {
                this.setState({curMsg: String(responseJson['name']) + " is checked in already."})
             }
            else if(responseJson['status'] == "CONFIRMED"){
+			   if(responseJson['requires_eid'] == true){
+				   this.setState({eid: true});
+			   }
 			   this.setState({valid: true})
 			   this.setState({curMsg: "Attendee is Confirmed. Check them In!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
            }
 		   else if(responseJson['status'] == "SIGNING"){
-			   this.setState({valid: true})
+			   /*
+			   if(responseJson['requires_eid'] == true){
+				   this.setState({eid: true});
+			   }
+			   this.setState({valid: true})*/
 			   this.setState({curMsg: "Attendee is Confirmed, but has not signed forms. Check them In after they sign their forms!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
            }
            else if(responseJson['status'] == "REJECTED"){
@@ -74,14 +85,14 @@ export class Confirmation extends React.Component {
 			   this.setState({curMsg: String(responseJson['name']) + " is waitlisted. Here is their data:\nAttendee Details: \nName: " + String(responseJson['name']) + "\nStatus: " + responseJson['status'] + "\nAge: " + String(responseJson['age']) + "\nBirthday: " + responseJson['birthday'] + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school']) })
              }
            this.setState({visible: false})
-          })
+	   })
           .catch((error) => {
             console.log(error)
             this.setState({error: true, errorMsg: String(error), visible: false})
-          });
+		})
         }
         else{
-          fetch(String(API.API.Pepper) + '?email=' + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(value))
+          fetch(String(API.API.Pepper) + '?email=' + String(this.props.navigation.state.params.email) + '&volunteer_email=' + String(API.API.Volunteer))
           .then(response => response.json())
           .then(responseJson => {
   			  if(responseJson['message'] == "User does not exist"){
@@ -98,72 +109,89 @@ export class Confirmation extends React.Component {
              this.setState({curMsg: "Attendee is Confirmed. Check them In!\nAttendee Details: \nName: " + String(responseJson['name']) + "\nAge: " + String(responseJson['age']) + "\nEmail: " + String(responseJson['email']) + "\nSchool: " + String(responseJson['school'])   })
            }
            this.setState({visible: false})
-          })
+	   })
           .catch((error) => {
             console.log(error)
             this.setState({error: true, errorMsg: String(error), visible: false})
-          });
+		})
         }
       }
       else{
         if(this.props.navigation.state.params.email == ''){
           this.setState({error: true, curMsg: "Please enter something into the email", visible: false})
         }
-        else if(value === null){
-          this.setState({error: true, curMsg: "Please enter a Volunteer Email", visible: false})
-        }
         else{
           this.setState({error: true, curMsg: "Unauthorized/Invalid Checkin link. Please contact an organizer", visible: false})
         }
       }
-    }.bind(this))
   }
 
   backPress() {
     this.props.navigation.state.params.resetState()
   }
   rescan(){
-    if(this.state.valid){
-		this.setState({visible : true})
-      AsyncStorage.getItem("volunteer").then(function(value){
-        console.log(String(API.API.Pepper))
-        fetch(String(API.API.Pepper), {
-          method:"POST",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({"email": String(this.props.navigation.state.params.email), "volunteer_email": String(value), "secret": String(API.API.Secret)}),
-        })
-        .then(response => response.json())
-        .then(responseJson => {
-          console.log(String(JSON.stringify(responseJson)))
-          if(responseJson['checked_in'] == true){
-            Toast.show("User successfully checked in")
-          }
-          else{
-            Toast.show("User check in failed.")
-          }
-         this.setState({visible: false})
-         this.props.navigation.state.params.resetState()
-         this.props.navigation.dispatch(NavigationActions.back())
-        })
-      }.bind(this))
-    }else{
       this.props.navigation.state.params.resetState()
       this.props.navigation.dispatch(NavigationActions.back())
-    }
+  }
+  sendCode(){
+	  if(this.state.eid){
+		  fetch(String(API.API.Pepper), {
+			method:"POST",
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({"email": String(this.props.navigation.state.params.email), "volunteer_email": + String(API.API.Volunteer), "secret": String(API.API.Secret), "eid": this.state.userEid}),
+		  })
+		  .then(response => response.json())
+		  .then(responseJson => {
+			console.log(String(JSON.stringify(responseJson)))
+			if(responseJson['checked_in'] == true){
+			  Toast.show("User successfully checked in")
+			}
+			else{
+			  Toast.show("User check in failed.")
+			}
+		   this.props.navigation.state.params.resetState()
+		   this.props.navigation.dispatch(NavigationActions.back())
+	   })
+	}
+	else{
+		  fetch(String(API.API.Pepper), {
+			method:"POST",
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({"email": String(this.props.navigation.state.params.email), "volunteer_email": String(API.API.Volunteer), "secret": String(API.API.Secret)}),
+		  })
+		  .then(response => response.json())
+		  .then(responseJson => {
+			console.log(String(JSON.stringify(responseJson)))
+			if(responseJson['checked_in'] == true){
+			  Toast.show("User successfully checked in")
+			}
+			else{
+			  Toast.show("User check in failed.")
+			}
+		   this.props.navigation.state.params.resetState()
+		   this.props.navigation.dispatch(NavigationActions.back())
+	   })
+	}
   }
 
   render(){
     var btn = null;
     var msg = null;
     var chkbtn = null;
+	var eidInput = null;
     if(!(this.state.visible)){
       btn = <Button style = {styles.button} onPress={this.rescan} title="Go Back"></Button>
       msg = <Text style = {styles.welcome}>{this.state.curMsg}</Text>
     }
     if(this.state.valid){
-      chkbtn = <Button onPress={this.rescan} title="Check In User"></Button>
+	  if(this.state.eid){
+		  eidInput = <TextInput style={{height: 40, width: 300, borderColor: 'gray', borderWidth: 1 }} onChangeText={(text) => this.setState({userEid: text})} value={this.state.userEid} />
+	  }
+      chkbtn = <Button onPress={this.sendCode} title="Check In User"></Button>
     }
     return(
       <View style={styles.container}>
@@ -172,6 +200,8 @@ export class Confirmation extends React.Component {
       {msg}
       {btn}
       <Text>{"\n"}</Text>
+	  {eidInput}
+	  <Text>{"\n"}</Text>
       {chkbtn}
       </View>
     )
