@@ -23,12 +23,14 @@ import {Entry} from './entry'
 import {Confirmation} from './Confirmation'
 import {QrCamera} from './camera'
 import {Settings} from './Settings'
+import {Checkin} from './Checkin'
 const cumin = StackNavigator({
   Home: { screen: Entry },
   QrCamera: {screen: QrCamera},
   Confirmation: {screen: Confirmation},
   Manual: {screen: ManualInput},
-  Settings: {screen: Settings, mode:'modal'}
+  Settings: {screen: Settings, mode:'modal'},
+  Checkin: {screen: Checkin}
 });
 
 
