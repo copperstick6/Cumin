@@ -22,14 +22,9 @@ export class Confirmation extends React.Component {
   constructor(props){
 	super(props)
 	this.state = {
-	  error: false,
-	  errorMsg : '',
 	  visible: true,
-	  userDetails: null,
-	  curMsg : null,
-	  eid: false,
-	  userEid: null,
-	  valid: false
+	  valid: false,
+	  msg: ""
 	}
 	this.backPress = this.backPress.bind(this)
 	this.rescan = this.rescan.bind(this)
@@ -51,6 +46,7 @@ export class Confirmation extends React.Component {
   }
   componentWillMount(){
 	  console.log(this.props.navigation.state.params.data)
+	  this.setState({visible: true, valid: false})
 	  console.log(API.API + "api/users/" + this.props.navigation.state.params.data.userId + "/checkin")
 	  fetch(API.API + "api/users/" + this.props.navigation.state.params.data.userId + "/checkin", {
 		  method: 'POST',
@@ -60,14 +56,30 @@ export class Confirmation extends React.Component {
 			'Content-Type': 'application/json',
 		  },
 	  }).then(response => response.json()).then(responseJson => {
-		  console.log("HI")
+		  console.log(responseJson)
+		  if(responseJson["status"]["admitted"] == false){
+			  this.setState({msg: "User is not admitted" })
+		  }
+		  else if(responseJson["status"]["confirmed"] == false){
+			  this.setState({msg: "User is not confirmed." })
+		  }
+		  else if (responseJson["status"]["declined"] == true){
+			  this.setState({msg: "User declined invitation." })
+		  }
+		  else{
+			  let new_msg = ""
+			  if (responseJson["profile"]["adult"] == false){
+				  mew_msg += "User is not an adult. Check ID to make sure.\n"
+			  }
+			  new_msg += "Name: " + responseJson["profile"]["name"] + "\n"
+			  new_msg += "School: " + responseJson["profile"]["school"] + "\n"
+			  new_msg += "EID: " + responseJson["profile"]["eid"] + "\n"
+			  new_msg += "Grad Year: " + responseJson["profile"]["graduationYear"] + "\n"
+			  new_msg += "Gender: " + responseJson["profile"]["gender"] + "\n"
+			  this.setState({msg: new_msg, valid: true})
+		  }
+		  this.setState({visible: false})
 	  });
-	  axios({
-		  method:"POST",
-		  url: API.API + "api/users/" + this.props.navigation.state.params.data.userId + "/checkin",
-		  headers: {'x-access-token': API.temp_token}
-	  }).then(function(response){ console.log(response)})
-
   }
 
   backPress() {
@@ -78,22 +90,20 @@ export class Confirmation extends React.Component {
 	  this.props.navigation.dispatch(NavigationActions.back())
   }
   sendCode(){
-
+	  Toast.show("User checked in!")
+	  this.props.navigation.state.params.resetState()
+	  this.props.navigation.dispatch(NavigationActions.back())
   }
 
   render(){
 	var btn = null;
-	var msg = null;
 	var chkbtn = null;
-	var eidInput = null;
+	var msg = null
 	if(!(this.state.visible)){
+	  msg = <Text style = {styles.welcome}>{this.state.msg}</Text>
 	  btn = <Button style = {styles.button} onPress={this.rescan} title="Go Back"></Button>
-	  msg = <Text style = {styles.welcome}>{this.state.curMsg}</Text>
 	}
 	if(this.state.valid){
-	  if(this.state.eid){
-		  eidInput = <TextInput style={{height: 40, width: 300, borderColor: 'gray', borderWidth: 1 }} onChangeText={(text) => this.setState({userEid: text})} value={this.state.userEid} />
-	  }
 	  chkbtn = <Button onPress={this.sendCode} title="Check In User"></Button>
 	}
 	return(
@@ -101,11 +111,9 @@ export class Confirmation extends React.Component {
 	  <Spinner visible={this.state.visible} textContent={"Loading..."} textStyle={{color: '#FFF'}} >
 	  </Spinner>
 	  {msg}
-	  {btn}
-	  <Text>{"\n"}</Text>
-	  {eidInput}
-	  <Text>{"\n"}</Text>
 	  {chkbtn}
+	  <Text>{"\n"}</Text>
+	  {btn}
 	  </View>
 	)
   }
