@@ -17,6 +17,8 @@ import {
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast'
 import API from '../config/api.json'
+import NfcManager, {Ndef} from 'react-native-nfc-manager';
+
 
 export class Confirmation extends React.Component {
   constructor(props){
@@ -147,12 +149,14 @@ export class Confirmation extends React.Component {
 			console.log(String(JSON.stringify(responseJson)))
 			if(responseJson['checked_in'] == true){
 			  Toast.show("User successfully checked in")
+      		  this.props.navigation.state.params.resetState()
+              this.props.navigation.navigate("NFC" ,{email: String(this.props.navigation.state.params.email)})
 			}
 			else{
 			  Toast.show("User check in failed.")
+      		  this.props.navigation.state.params.resetState()
+      		  this.props.navigation.dispatch(NavigationActions.back())
 			}
-		   this.props.navigation.state.params.resetState()
-		   this.props.navigation.dispatch(NavigationActions.back())
 	   })
 	}
 	else{
@@ -168,12 +172,15 @@ export class Confirmation extends React.Component {
 			console.log(String(JSON.stringify(responseJson)))
 			if(responseJson['checked_in'] == true){
 			  Toast.show("User successfully checked in")
+              this.props.navigation.state.params.resetState()
+              this.props.navigation.navigate("NFC", {email: String(this.props.navigation.state.params.email)})
+
 			}
 			else{
 			  Toast.show("User check in failed.")
+              this.props.navigation.state.params.resetState()
+              this.props.navigation.dispatch(NavigationActions.back())
 			}
-		   this.props.navigation.state.params.resetState()
-		   this.props.navigation.dispatch(NavigationActions.back())
 	   })
 	}
   }

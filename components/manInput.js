@@ -16,7 +16,7 @@ export class ManualInput extends Component {
   }
   confirmationScreen(){
     const { navigate } = this.props.navigation;
-    navigate("Confirmation", {email: this.state.text, resetState: this.resetState})
+    navigate("NFC", {email: this.state.text, resetState: this.resetState})
     console.log("pressed")
   }
 
