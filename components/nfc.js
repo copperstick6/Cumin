@@ -10,8 +10,7 @@ import {
     ScrollView,
 } from 'react-native';
 import NfcManager, {Ndef} from 'react-native-nfc-manager';
-
-
+import API from '../config/api.json'
 
 export class nfc extends Component {
     constructor(props) {
@@ -19,13 +18,17 @@ export class nfc extends Component {
         this.state = {
             supported: true,
             enabled: false,
-            isWriting: false,
-            parsedText: null,
             tag: null,
+            scanned: false
         }
+        this.sendRequest = this.sendRequest.bind(this)
+        this._startNfc = this._startNfc.bind(this)
+        this._onTagDiscovered = this._onTagDiscovered.bind(this)
+        this._startDetection = this._startDetection.bind(this)
+        this._stopDetection = this._stopDetection.bind(this)
     }
-
-    componentDidMount() {
+    componentWillMount(){
+        this.setState({tag: null, scanned: false})
         console.log(this.props.navigation.state.params.email)
         NfcManager.isSupported()
             .then(supported => {
@@ -35,34 +38,18 @@ export class nfc extends Component {
                 }
             })
     }
-
-
-
-    render() {
-        let { supported, enabled, tag, isWriting, urlToWrite, parsedText, rtdType } = this.state;
-        let tagPrint = null
-        if(this.state.tag != null){
-            tagPrint =  <Text style={{ marginTop: 20 }}>{`Current tag ID: ${JSON.stringify(tag)}`}</Text>
-
+    componentWillUnmount() {
+        this._stopDetection()
+        if (this._stateChangedSubscription) {
+            this._stateChangedSubscription.remove();
         }
-        return (
-            <ScrollView style={{flex: 1, backgroundColor: '#F5FCFF',}}>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-
-                    <TouchableOpacity style={{ marginTop: 20 }} onPress={this._startDetection}>
-                        <Text style={{ color: 'blue' }}>Start Tag Detection</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{ marginTop: 20 }} onPress={this._stopDetection}>
-                        <Text style={{ color: 'red' }}>Stop Tag Detection</Text>
-                    </TouchableOpacity>
-                    {tagPrint}
-                </View>
-            </ScrollView>
-        )
     }
 
-
+    sendRequest(){
+        this._stopDetection()
+        fetch(String(API.API.NFC) + "/checkin_create_user?email=" + String(this.props.navigation.state.params.email)  + '&id=' + String(this.state.tag))
+        this.props.navigation.navigate("Manual")
+    }
 
     _startNfc() {
 
@@ -81,9 +68,7 @@ export class nfc extends Component {
     }
 
     _onTagDiscovered = tag => {
-        console.log('Tag Discovered', tag);
-        console.log(tag.id)
-        this.setState({ tag: tag.id });
+        this.setState({ tag: tag.id, scanned: true });
     }
 
     _startDetection = () => {
@@ -106,41 +91,33 @@ export class nfc extends Component {
             })
     }
 
-    _clearMessages = () => {
-        this.setState({tag: null});
+    render() {
+        let { supported, enabled, tag } = this.state;
+        let tagPrint = <Text>{"\n"}</Text>
+        let sendrequest = <Text>{"\n"}</Text>
+        if(this.state.scanned){
+            tagPrint =  <Text style={{ marginTop: 20 }}>{`Current tag ID: ${JSON.stringify(tag)}`}</Text>
+            sendrequest = <Button title="Send NFC data" onPress={this.sendRequest} />
+
+        }
+        return (
+            <ScrollView style={{flex: 1, backgroundColor: '#F5FCFF',}}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+
+                    <TouchableOpacity style={{ marginTop: 20 }} onPress={this._startDetection}>
+                        <Text style={{ color: 'blue' }}>Start Tag Detection</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{ marginTop: 20 }} onPress={this._stopDetection}>
+                        <Text style={{ color: 'red' }}>Stop Tag Detection</Text>
+                    </TouchableOpacity>
+                    <Text>Scanned: {this.state.scanned.toString()}</Text>
+                    {tagPrint}
+                    <Text>{"\n"}</Text>
+                    {sendrequest}
+                </View>
+            </ScrollView>
+        )
     }
 
-    _goToNfcSetting = () => {
-        if (Platform.OS === 'android') {
-            NfcManager.goToNfcSetting()
-                .then(result => {
-                    console.log('goToNfcSetting OK', result)
-                })
-                .catch(error => {
-                    console.warn('goToNfcSetting fail', error)
-                })
-        }
-    }
-
-    _parseUri = (tag) => {
-        try {
-            if (Ndef.isType(tag.ndefMessage[0], Ndef.TNF_WELL_KNOWN, Ndef.RTD_URI)) {
-                return Ndef.uri.decodePayload(tag.ndefMessage[0].payload);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        return null;
-    }
-
-    _parseText = (tag) => {
-        try {
-            if (Ndef.isType(tag.ndefMessage[0], Ndef.TNF_WELL_KNOWN, Ndef.RTD_TEXT)) {
-                return Ndef.text.decodePayload(tag.ndefMessage[0].payload);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        return null;
-    }
 }

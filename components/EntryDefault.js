@@ -21,6 +21,7 @@ export class EntryDefault extends Component {
 	super(props)
 	this.navigateQR = this.navigateQR.bind(this)
 	this.navigateManual = this.navigateManual.bind(this)
+    this.navigateEvent = this.navigateEvent.bind(this)
   }
   navigateQR(){
 	const {navigate} = this.props.navigation
@@ -29,6 +30,10 @@ export class EntryDefault extends Component {
   navigateManual(){
 	const {navigate} = this.props.navigation
 	navigate("Manual")
+  }
+  navigateEvent(){
+    const {navigate} = this.props.navigation
+  	navigate("Event")
   }
 
 
@@ -43,6 +48,12 @@ export class EntryDefault extends Component {
 	  </Text>
 	  <Text>{"\n"}</Text>
 	  <Button onPress={this.navigateQR} title="Check In">Navigate</Button>
+      <Text>{"\n"}</Text>
+      <Text>{"\n"}</Text>
+      <Text style = {styles.instructions}>
+	  To get started with events:
+      </Text>
+      <Button onPress={this.navigateEvent} title="Events">Navigate</Button>
 	  </View>
 	)
   }
