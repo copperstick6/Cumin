@@ -13,12 +13,11 @@ import {
 } from 'react-native';
 import {Volunteer} from './volunteer'
 
-import {EntryDefault} from './EntryDefault'
-import API from '../config/api.json'
+import {Default} from './Default'
 
-export class Entry extends Component {
+export class Checkin extends Component {
   static navigationOptions =({navigation}) => ({
-	title: 'Welcome',
+	title: 'Checkin',
 	headerRight: <Button title="Settings" onPress ={() => navigation.navigate('Settings')}/>
   });
   constructor(props){
@@ -44,7 +43,7 @@ export class Entry extends Component {
 	  screen = <Volunteer setNew = {this.setNew} />
 	}
 	else{
-	  screen = <EntryDefault navigation = {this.props.navigation}/>
+	  screen = <Default navigation = {this.props.navigation}/>
 	}
 	const { navigate } = this.props.navigation;
 	return (
@@ -63,13 +62,13 @@ const styles = StyleSheet.create({
 	height: '40%',
 	width: '75%',
 	resizeMode: "contain",
-	backgroundColor: '#FFFFFF',
+	backgroundColor: '#F5FCFF',
   },
   container: {
 	flex: 3,
 	justifyContent: 'flex-start',
 	alignItems: 'center',
-	backgroundColor: '#FFFFFF',
+	backgroundColor: '#F5FCFF',
   },
   button: {
 	marginRight: 10,
