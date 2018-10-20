@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import NfcManager, {Ndef} from 'react-native-nfc-manager';
 import API from '../config/api.json'
+import {
+  NavigationActions,
+} from 'react-navigation';
 
 export class nfc extends Component {
     constructor(props) {
@@ -48,7 +51,7 @@ export class nfc extends Component {
     sendRequest(){
         this._stopDetection()
         fetch(String(API.API.NFC) + "/checkin_create_user?email=" + String(this.props.navigation.state.params.email)  + '&id=' + String(this.state.tag))
-        this.props.navigation.navigate("Manual")
+        this.props.navigation.dispatch(NavigationActions.back())
     }
 
     _startNfc() {

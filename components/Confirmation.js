@@ -166,7 +166,7 @@ export class Confirmation extends React.Component {
 			  'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({"email": String(this.props.navigation.state.params.email), "volunteer_email": String(API.API.Volunteer), "secret": String(API.API.Secret)}),
-		  })
+        })
 		  .then(response => response.json())
 		  .then(responseJson => {
 			console.log(String(JSON.stringify(responseJson)))

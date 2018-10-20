@@ -10,6 +10,7 @@ export class ManualInput extends Component {
     this.state = { text: '' };
     this.confirmationScreen = this.confirmationScreen.bind(this)
     this.resetState = this.resetState.bind(this)
+    this.rescanNFC = this.rescanNFC.bind(this)
   }
   resetState(){
     this.setState({text: ''})
@@ -18,6 +19,12 @@ export class ManualInput extends Component {
     const { navigate } = this.props.navigation;
     navigate("Confirmation", {email: this.state.text, resetState: this.resetState})
     console.log("pressed")
+  }
+
+  rescanNFC(){
+      const { navigate } = this.props.navigation;
+      this.setState({text: ''})
+      navigate("NFC", {email: this.state.text})
   }
 
   render() {
@@ -34,6 +41,11 @@ export class ManualInput extends Component {
       <Text style = {styles.welcome}>
       </Text>
       <Button onPress={this.confirmationScreen} title="Next"></Button>
+
+      <Text style = {styles.welcome}>
+      {"\n"}
+      </Text>
+      <Button onPress={this.rescanNFC} title="Rescan NFC"></Button>
       </View>
 
     );
