@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Toast from 'react-native-simple-toast'
 import {NavigationActions} from 'react-navigation'
+import NfcManager, {Ndef} from 'react-native-nfc-manager';
 
 export class Settings extends Component {
   static navigationOptions = {
@@ -23,10 +24,13 @@ export class Settings extends Component {
   constructor(props){
     super(props)
     this.state = {
-      text: ''
+      text: '',
+      supported: true,
+      enabled: false,
     }
     this.saveEmail = this.saveEmail.bind(this)
   }
+
 
   saveEmail(){
     AsyncStorage.setItem("volunteer", this.state.text)
@@ -34,6 +38,17 @@ export class Settings extends Component {
     this.props.navigation.dispatch(NavigationActions.back())
   }
   componentWillMount(){
+      NfcManager.isSupported()
+          .then(supported => {
+              this.setState({ supported });
+          })
+      NfcManager.isEnabled()
+          .then(enabled => {
+              this.setState({ enabled });
+          })
+          .catch(err => {
+              console.log(err);
+          })
     AsyncStorage.getItem("volunteer").then(function(value){
       console.log(value)
       if(!(value === null)){
@@ -41,8 +56,20 @@ export class Settings extends Component {
       }
     }.bind(this))
   }
+  _goToNfcSetting = () => {
+      if (Platform.OS === 'android') {
+          NfcManager.goToNfcSetting()
+              .then(result => {
+                  console.log('goToNfcSetting OK', result)
+              })
+              .catch(error => {
+                  console.warn('goToNfcSetting fail', error)
+              })
+      }
+  }
 
   render() {
+     let { supported, enabled} = this.state;
     return (
       <View style = {styles.container}>
       <Text style={styles.welcome}>
@@ -54,6 +81,14 @@ export class Settings extends Component {
         value={this.state.text}
       />
       <Button onPress={this.saveEmail} title="Next"></Button>
+      <Text>{"\n"}</Text>
+      <Text>{"\n"}</Text>
+      <Text style={styles.nfc}>{`Is NFC supported ? ${supported}`}</Text>
+      <Text style={styles.nfc}>{`Is NFC enabled (Android only)? ${enabled}`}</Text>
+      <Text>{"\n"}</Text>
+      <Text style={styles.nfc}>Set NFC Setting here: (Go to Connection preferences -> NFC)</Text>
+      <Button style={{ marginTop: 20 }} onPress={this._goToNfcSetting} title="Go to NFC setting">
+      </Button>
       </View>
     )
   }
@@ -71,6 +106,12 @@ const styles = StyleSheet.create({
     marginTop: 50,
     fontSize: 25,
     marginBottom: 10,
+    textAlign: 'center'
+  },
+  nfc: {
+      fontSize: 25,
+      margin: 10,
+      textAlign: 'center'
   },
   instructions: {
     textAlign: 'center',
