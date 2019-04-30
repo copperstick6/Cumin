@@ -11,11 +11,10 @@ import {
 } from 'react-native';
 import NfcManager, {Ndef} from 'react-native-nfc-manager';
 import API from '../config/api.json'
-import {
-  NavigationActions,
-} from 'react-navigation';
+import Toast from 'react-native-simple-toast'
 
-export class nfc extends Component {
+
+export class eventnfc extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -50,8 +49,21 @@ export class nfc extends Component {
 
     sendRequest(){
         this._stopDetection()
-        fetch(String(API.API.NFC) + "/checkin_create_user?email=" + String(this.props.navigation.state.params.email)  + '&id=' + String(this.state.tag))
-        this.props.navigation.dispatch(NavigationActions.back())
+		console.log(String(API.API.NFC) + "/check_user_event?event=" + String(this.props.navigation.state.params.event)  + '&id=' + String(this.state.tag))
+        fetch(String(API.API.NFC) + "/check_user_event?event=" + String(this.props.navigation.state.params.event)  + '&id=' + String(this.state.tag))
+		.then(json => json.text())
+		.then(response => {
+			console.log(this.state.tag)
+			if(response == "consumed"){
+				Toast.show("User has already come for this event.")
+			} else if(response == "failed"){
+				Toast.show("Error with user, either attendee sneaked in or is not validated")
+			}
+			else{
+				Toast.show("User successfully checked for event!")
+				this.setState({scanned: false, tag: null})
+			}
+		})
     }
 
     _startNfc() {
